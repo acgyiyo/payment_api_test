@@ -1,0 +1,7 @@
+{
+  "POSTGRES_USER": "payment_api_test_user",
+  "POSTGRES_PASSWORD": "payment_api_test_pass",
+  "DB_HOST": "localhost",
+  "DB_NAME": "payment_api_test_db",
+  "DB_PORT": "5432"
+}
