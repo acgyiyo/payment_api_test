@@ -6,7 +6,7 @@ import (
 )
 
 func PaymentRoutes(route *gin.Engine, paymentPostHandler handler.PostPayment, paymentGetHanlder handler.GetPayment, refundHandler handler.RefundPayment) {
-	routes := route.Group("/payment2")
+	routes := route.Group("/payment")
 	{
 		routes.POST("", paymentPostHandler.ProcessPayment)
 		routes.GET("/:id", paymentGetHanlder.QueryPayment)
