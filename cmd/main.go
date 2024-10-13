@@ -37,6 +37,7 @@ func main() {
 
 	//GIN routes
 	router := gin.Default()
+	router.POST("/login", handler.Login)
 	delivery.PaymentRoutes(router, paymentPostHandler, paymentGetHandler, refundHandler)
 
 	// Start the server //TODO refactor
