@@ -1,4 +1,4 @@
-package utils
+package config
 
 import (
 	"github.com/spf13/viper"
@@ -26,4 +26,9 @@ func LoadConfig(path string) (config *Config, err error) {
 
 	err = viper.Unmarshal(&config)
 	return
+}
+
+func LoadSecretsFromSecretsService() {
+	//TODO implement a service that load secrets from a secrets like user and password from a
+	// service like AWS Secrets Manager or GCP Secret Manager
 }

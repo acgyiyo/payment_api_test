@@ -1,30 +1,30 @@
-package models
+package config
 
 import (
 	"fmt"
 	"log"
 
-	"github.com/acgyiyo/payment_api_test/internal/utils"
+	"github.com/acgyiyo/payment_api_test/internal/domain/entity"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
 
-func InitDB(config *utils.Config) error {
+func InitDB(config *Config) (*gorm.DB, error) {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", config.Host, config.User, config.Password, config.Dbname, config.Port)
 
 	var err error
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to connect to the database: %v", err)
-		return err
+		return nil, err
 	}
 
-	err = DB.AutoMigrate(&Payment{})
+	err = DB.AutoMigrate(&entity.Payment{})
 	if err != nil {
 		log.Fatalf("Failed to init migrations: %v", err)
-		return err
+		return nil, err
 	}
 	log.Print("Init DB successfully")
 
@@ -34,12 +34,12 @@ func InitDB(config *utils.Config) error {
 		log.Fatalf("Failed to insert development values: %v", err)
 	}
 
-	return nil
+	return DB, nil
 }
 
 // only for development porpouses
 func InsertInitValues(db *gorm.DB) error {
-	merchants := []Merchant{
+	merchants := []entity.Merchant{
 		{
 			Name: "Merchant 1",
 		},
