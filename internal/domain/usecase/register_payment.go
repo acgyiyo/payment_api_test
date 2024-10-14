@@ -3,10 +3,12 @@ package usecase
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 
 	"github.com/acgyiyo/payment_api_test/internal/domain/entity"
 	"github.com/acgyiyo/payment_api_test/internal/domain/gateway"
+	"github.com/acgyiyo/payment_api_test/internal/infrastructure/service/audit"
 )
 
 type RegisterPayment interface {
@@ -29,12 +31,16 @@ func (rp *registerPayment) SavePayment(ctx context.Context, payment entity.Payme
 	result, err := rp.bankService.ProcessPaymentInBank(&payment)
 	if err != nil {
 		log.Print("error processing payment: ProcessPaymentInBank failed: ", err)
+		audit.AuditMsg(fmt.Sprintf("error processing payment: ProcessPaymentInBank failed: %s, tags:{%s:%+v}",
+			err.Error(), "payment", payment))
 		return nil, errors.New("error validating payment in bank: " + err.Error())
 	}
 
 	err = rp.paymentStore.SavePayment(ctx, result)
 	if err != nil {
 		log.Print("error processing payment: SavePayment failed: ", err)
+		audit.AuditMsg(fmt.Sprintf("error processing payment: SavePayment failed: %s, tags:{%s:%+v}",
+			err.Error(), "payment", payment))
 		return nil, errors.New("error saving payment")
 	}
 

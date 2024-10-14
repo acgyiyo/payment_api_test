@@ -3,10 +3,12 @@ package usecase
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 
 	"github.com/acgyiyo/payment_api_test/internal/domain/entity"
 	"github.com/acgyiyo/payment_api_test/internal/domain/gateway"
+	"github.com/acgyiyo/payment_api_test/internal/infrastructure/service/audit"
 )
 
 type RetrievePayment interface {
@@ -26,7 +28,9 @@ func NewRetrievePayment(st gateway.PaymentStore) RetrievePayment {
 func (rp *retrievePayment) SearchPaymentByTransactionID(ctx context.Context, transactionID string) (*entity.PaymentResponse, error) {
 	result, err := rp.paymentStore.SearchPaymentByTransactionID(ctx, transactionID)
 	if err != nil {
-		log.Print("error retrievement payment: SearchPaymentByTransactionID failed", err)
+		log.Print("error retrievement payment: SearchPaymentByTransactionID failed: ", err)
+		audit.AuditMsg(fmt.Sprintf("error retrievement payment: SearchPaymentByTransactionID failed: %s, tags:{%s:%+v}",
+			err.Error(), "transactionID", transactionID))
 		return nil, errors.New("Error getting payment with transactioID: " + transactionID)
 	}
 

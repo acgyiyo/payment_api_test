@@ -3,10 +3,12 @@ package usecase
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 
 	"github.com/acgyiyo/payment_api_test/internal/domain/entity"
 	"github.com/acgyiyo/payment_api_test/internal/domain/gateway"
+	"github.com/acgyiyo/payment_api_test/internal/infrastructure/service/audit"
 )
 
 type UpdatePayment interface {
@@ -29,18 +31,24 @@ func (rp *updatePayment) UpdatePayment(ctx context.Context, refund entity.Paymen
 	result, err := rp.paymentStore.SearchPaymentByTransactionID(ctx, refund.TransactionID)
 	if err != nil {
 		log.Print("error updating payment: SearchPaymentByTransactionID failed: ", err)
+		audit.AuditMsg(fmt.Sprintf("error updating payment: SearchPaymentByTransactionID failed: %s, tags:{%s:%+v}",
+			err.Error(), "refund", refund))
 		return nil, errors.New("transaction not found")
 	}
 
 	_, err = rp.bankService.ProcessRefundInBank(result)
 	if err != nil {
 		log.Print("error processing refund: ProcessRefundInBank failed", err)
+		audit.AuditMsg(fmt.Sprintf("error processing refund: ProcessRefundInBank failed: %s, tags:{%s:%+v}",
+			err.Error(), "refund", refund))
 		return nil, errors.New("error processing refund in bank")
 	}
 
 	err = rp.paymentStore.UpdatePayment(ctx, result)
 	if err != nil {
 		log.Print("error processing refund: UpdatePayment failed", err)
+		audit.AuditMsg(fmt.Sprintf("error processing refund: UpdatePayment failed: %s, tags:{%s:%+v}",
+			err.Error(), "refund", refund))
 		return nil, errors.New("error updating payment")
 	}
 
