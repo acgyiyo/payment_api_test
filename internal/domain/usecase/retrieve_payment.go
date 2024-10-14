@@ -2,7 +2,8 @@ package usecase
 
 import (
 	"context"
-	"fmt"
+	"errors"
+	"log"
 
 	"github.com/acgyiyo/payment_api_test/internal/domain/entity"
 	"github.com/acgyiyo/payment_api_test/internal/domain/gateway"
@@ -23,23 +24,11 @@ func NewRetrievePayment(st gateway.PaymentStore) RetrievePayment {
 }
 
 func (rp *retrievePayment) SearchPaymentByTransactionID(ctx context.Context, transactionID string) (*entity.PaymentResponse, error) {
-	fmt.Print("Consultando payment in service\n")
-
 	result, err := rp.paymentStore.SearchPaymentByTransactionID(ctx, transactionID)
 	if err != nil {
-		return nil, err
+		log.Print("error retrievement payment: SearchPaymentByTransactionID failed", err)
+		return nil, errors.New("Error getting payment with transactioID: " + transactionID)
 	}
 
 	return convertPaymentToResponse(result), nil
 }
-
-/*
-func convertPaymentToResponse(payment *entity.Payment) *entity.PaymentResponse {
-	return &entity.PaymentResponse{
-		TransactionID: payment.TransactionID,
-		Amount:        payment.Amount,
-		MerchantID:    payment.MerchantID,
-		CustomerCard:  payment.CustomerCard,
-	}
-}
-*/

@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"log"
 
 	"github.com/acgyiyo/payment_api_test/internal/domain/entity"
@@ -26,16 +26,16 @@ func NewRegisterPayment(st gateway.PaymentStore, bs gateway.BankService) Registe
 }
 
 func (rp *registerPayment) SavePayment(ctx context.Context, payment entity.Payment) (*entity.PaymentResponse, error) {
-	fmt.Print("registrando payment in service\n")
-
 	result, err := rp.bankService.ProcessPaymentInBank(&payment)
 	if err != nil {
-		log.Print("error processing payment: ProcessPaymentInBank failed", err)
+		log.Print("error processing payment: ProcessPaymentInBank failed: ", err)
+		return nil, errors.New("error validating payment in bank: " + err.Error())
 	}
 
 	err = rp.paymentStore.SavePayment(ctx, result)
 	if err != nil {
-		return nil, err
+		log.Print("error processing payment: SavePayment failed: ", err)
+		return nil, errors.New("error saving payment")
 	}
 
 	return convertPaymentToResponse(result), nil

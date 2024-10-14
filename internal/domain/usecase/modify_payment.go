@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"log"
 
 	"github.com/acgyiyo/payment_api_test/internal/domain/entity"
@@ -26,24 +26,22 @@ func NewUpdatePayment(st gateway.PaymentStore, bs gateway.BankService) UpdatePay
 }
 
 func (rp *updatePayment) UpdatePayment(ctx context.Context, refund entity.Payment) (*entity.PaymentResponse, error) {
-	fmt.Print("Actualizando payment in service\n")
-
 	result, err := rp.paymentStore.SearchPaymentByTransactionID(ctx, refund.TransactionID)
 	if err != nil {
-		log.Print("transaction not found") //TODO Improve
-		return nil, err
-		//ctx.JSON(http.StatusInternalServerError, "transaction not found") //TODO response error
+		log.Print("error updating payment: SearchPaymentByTransactionID failed: ", err)
+		return nil, errors.New("transaction not found")
 	}
 
 	_, err = rp.bankService.ProcessRefundInBank(result)
 	if err != nil {
 		log.Print("error processing refund: ProcessRefundInBank failed", err)
-		return nil, err
+		return nil, errors.New("error processing refund in bank")
 	}
 
 	err = rp.paymentStore.UpdatePayment(ctx, result)
 	if err != nil {
-		return nil, err
+		log.Print("error processing refund: UpdatePayment failed", err)
+		return nil, errors.New("error updating payment")
 	}
 
 	return convertPaymentToResponse(result), nil
