@@ -9,6 +9,7 @@ import (
 	"github.com/acgyiyo/payment_api_test/internal/infrastructure/delivery/handler"
 	"github.com/acgyiyo/payment_api_test/internal/infrastructure/repository"
 	"github.com/acgyiyo/payment_api_test/internal/infrastructure/service"
+	"github.com/acgyiyo/payment_api_test/internal/infrastructure/service/metric"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,6 +21,7 @@ func main() {
 	}
 
 	db, _ := config.InitDB(configParams)
+	metric.InitDatadogStatsd()
 
 	//init repositories and services
 	paymentStore := repository.NewPaymentDataBase(db)

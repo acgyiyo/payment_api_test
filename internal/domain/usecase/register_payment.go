@@ -44,6 +44,9 @@ func (rp *registerPayment) SavePayment(ctx context.Context, payment entity.Payme
 		return nil, errors.New("error saving payment")
 	}
 
+	//counting metrics
+	metric.Count("SavePayment", 1, nil, 0)
+
 	return convertPaymentToResponse(result), nil
 }
 

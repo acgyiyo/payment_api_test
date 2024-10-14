@@ -5,6 +5,7 @@ go 1.23.2
 require gorm.io/gorm v1.25.12
 
 require (
+	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/bytedance/sonic v1.11.6 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
@@ -56,6 +57,7 @@ require (
 )
 
 require (
+	github.com/DataDog/datadog-go v4.8.3+incompatible
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/jinzhu/inflection v1.0.0 // indirect
